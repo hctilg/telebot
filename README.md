@@ -14,7 +14,7 @@ if (!file_exists("lib/telebot.php")) {
     copy("https://raw.githubusercontent.com/hctilg/telebot/v1.0/index.php", "lib/telebot.php");
 }
 
-require('telebot.php');
+require('lib/telebot.php');
 
 // $TeleBot->Bot(string $method, array $parameters);
 $TeleBot = new Telebot('TOKEN');
