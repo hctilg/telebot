@@ -13,7 +13,10 @@ class Telebot
    */
   public static $token;
 
-  public function __construct(string $token=null, string $api="https://api.telegram.org/bot"){
+  public function __construct(string $token, string $api="https://api.telegram.org/bot"){
+    // Check bot token
+    if (empty($token)) die("Bot token should not be empty!\n");
+    
     self::$api = $api;
     self::$token = $token;
   }
