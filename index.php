@@ -1,29 +1,28 @@
 <?php
 
-class Telebot
-{
+class Telebot {
 
   /**
    * Telegram Bot API URL / endpoint
    */
-  public static $api;
+  public $api;
 
   /**
    * Bot token from @BotFather
    */
-  public static $token;
+  public $token;
 
-  public function __construct(string $token, string $api="https://api.telegram.org/bot"){
+  public function __construct(string $token, string $api="https://api.telegram.org/bot") {
     // Check bot token
     if (empty($token)) die("Bot token should not be empty!\n");
     
-    self::$api = $api;
-    self::$token = $token;
+    $this->api = $api;
+    $this->token = $token;
   }
 
   /** Bot **/
-  public function Bot(string $method, array $parameters=array()){
-    $url = self::$api . self::$token . '/';
+  public function Bot(string $method, array $parameters=array()) {
+    $url = $this->api . $this->token . '/';
     if (!$parameters) $parameters = array();
     $parameters['method'] = $method;
 
