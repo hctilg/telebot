@@ -11,17 +11,16 @@ The Library for Build a Telegram Bot.
 
 // Checking the exists "Telebot Library".
 if (!file_exists("lib/telebot.php")) {
-    copy("https://raw.githubusercontent.com/hctilg/telebot/v1.0/index.php", "lib/telebot.php");
+    copy("https://raw.githubusercontent.com/hctilg/telebot/v1.1/index.php", "lib/telebot.php");
 }
 
 require('lib/telebot.php');
 
-// $TeleBot->Bot(string $method, array $parameters);
-$TeleBot = new Telebot('TOKEN');
+$bot = new Telebot('TOKEN');
 
 ?>
 ```
 
-### [Example](Example.md)
+### [A Few Example](Example.md)
 
 #### [Telegram Bot API](https://core.telegram.org/bots/api)

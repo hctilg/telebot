@@ -20,12 +20,12 @@ class Telebot {
     $this->token = $token;
   }
 
-  /** Bot **/
-  public function Bot(string $method, array $parameters=array()) {
+  public function __call(string $method, array $args=array()) {
     $url = $this->api . $this->token . '/';
-    if (!$parameters) $parameters = array();
-    $parameters['method'] = $method;
-
+    $params = !empty($args[0]) ? $args[0] : Null;
+    if (!$params) $params = array();
+    $params['method'] = $method;
+    
     $request = curl_init($url);
     curl_setopt($request, CURLOPT_URL, $url);
     curl_setopt($request, CURLOPT_RETURNTRANSFER, true);
@@ -33,12 +33,12 @@ class Telebot {
     curl_setopt($request, CURLOPT_SSL_VERIFYPEER, false);
     // curl_setopt($request, CURLOPT_CONNETTIMEOUT, 7);
     curl_setopt($request, CURLOPT_TIMEOUT, 60);
-    curl_setopt($request, CURLOPT_POSTFIELDS, json_encode($parameters));
+    curl_setopt($request, CURLOPT_POSTFIELDS, json_encode($params));
     curl_setopt($request, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
-
     $result = curl_exec($request);
     curl_close($request);
-    return($result);
+
+    return($result ? json_decode($result, true) : false);
   }
 }
 
