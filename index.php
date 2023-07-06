@@ -13,14 +13,21 @@ class Telebot {
   public $token;
 
   public function __construct(string $token, string $api="https://api.telegram.org/bot") {
+    // Check php version
+    if (version_compare(phpversion(), '5.4', '<')) {
+      die("It requires PHP 5.4 or higher. Your PHP version is " . phpversion() . PHP_EOL);
+    }
+
     // Check bot token
-    if (empty($token)) die("Bot token should not be empty!\n");
+    if (empty($token)) {
+      die("Bot token should not be empty!\n");
+    }
     
     $this->api = $api;
     $this->token = $token;
   }
 
-  public function __call(string $method, array $args=array()) {
+  private function send(string $method, array $args=[]) {
     $url = $this->api . $this->token . '/';
     $params = !empty($args[0]) ? $args[0] : Null;
     if (!$params) $params = array();
@@ -39,6 +46,24 @@ class Telebot {
     curl_close($request);
 
     return($result ? json_decode($result, true) : false);
+  }
+
+  /**
+   * $bot = new Telebot("TOKEN");
+   * $bot($method, $args);
+   * for example: $bot('sendMessage', ['chat_id'=>$chat_id, 'text'=>$text]);
+   */
+  public function __invoke(string $method, array $args=[]) {
+    return $this->send($method, $args);
+  }
+
+  /**
+   * $bot = new Telebot("TOKEN");
+   * $bot->$method($args);
+   * for example: $bot->sendMessage(['chat_id'=>$chat_id, 'text'=>$text]);
+   */
+  public function __call(string $method, array $args=[]) {
+    return $this->send($method, $args);
   }
 }
 
