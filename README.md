@@ -9,7 +9,7 @@ The Library for Build a Telegram Bot.
 ```php
 // Checking the exists "Telebot Library".
 if (!file_exists("lib/telebot.php")) {
-    copy("https://raw.githubusercontent.com/hctilg/telebot/v1.2/index.php", "lib/telebot.php");
+  copy("https://raw.githubusercontent.com/hctilg/telebot/v1.2/index.php", "lib/telebot.php");
 }
 
 require('lib/telebot.php');
@@ -86,28 +86,16 @@ $chat_id = $update['message']['chat']['id'];
 $contact = $update['message']['contact'];
 $text = $update['message']['text'];
 
-$keyboard_btn = [
-  'resize_keyboard'=> true,
-  'keyboard'=> [
-    ['Help', 'Contact'],
-    [
-      ['text'=> 'Share Phone Number', 'request_contact'=> true]
-    ]
-  ]
-];
+$keyboard_btn = Telebot::keyboard("
+[Help]
+[Share Phone Number|request_contact] [Share Location|request_location]
+");
 
 $bot->sendMessage([
   'chat_id'=> $chat_id,
   'text'=> "Keyboard Buttons :",
   'reply_markup'=> $keyboard_btn
 ]);
-
-if ($text == 'Contact') {
-  $bot->sendMessage([
-    'chat_id'=>$chat_id,
-    'text'=> "@telegram"
-  ]);
-}
 
 if ($text == 'Help') {
   $bot->sendMessage([

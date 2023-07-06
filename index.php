@@ -65,6 +65,48 @@ class Telebot {
   public function __call(string $method, array $args=[]) {
     return $this->send($method, $args);
   }
+
+  /**
+   * to build keyboard from string
+   * for example: 
+   * $btn = Telebot::keyboard('[text] [contact|request_contact] [location|request_location]');
+   * $bot->sendMessage(['chat_id'=> $chat_id, 'text'=> $text, 'reply_markup' => $btn]);
+   */
+  public static function keyboard(
+    string $pattern,
+    $input_field_placeholder = 'type here..',
+    $resize_keyboard = true,
+    $one_time_keyboard = true
+  ) {
+    if (preg_match_all('/\[[^\|\]]+\|?[^\|\]]+\]([^\n]+)?([\n]+|$)/', $pattern, $match)) {
+      $arr = $match[0]; # array
+      $keyboard = [];
+      foreach ($arr as $list) {
+        preg_match_all('/\[[^\|\]]+\|?[^\|\]]+\]/', $list, $new);
+        $array = $new[0];
+        $arrange = [];
+        foreach ($array as $a) {
+          $b = explode('|', $a);
+          $x = [];
+          foreach ($b as $c) $x[] = $c;
+          $f  = trim(str_replace(['[',']'], '', $a));
+          $b0 = trim(str_replace(['[',']'], '', $x[0]));
+          $b1 = isset($x[1]) ? trim(str_replace(']', '', $x[1])) : '';
+          $is_req = $b1 === "request_contact" || $b1 === "request_location";
+          $btn = ["text" => $is_req ? $b0 : $f];
+          if ($is_req) $btn[$b1] = true;
+          $arrange[] = $btn;
+        }
+        $keyboard[] = $arrange;
+      }
+      return json_encode([
+        "keyboard" => $keyboard,
+        'resize_keyboard' => $resize_keyboard,
+        'one_time_keyboard' => $one_time_keyboard,
+        'input_field_placeholder' => $input_field_placeholder
+      ]);
+    }
+  }
 }
 
 ?>
