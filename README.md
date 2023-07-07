@@ -2,14 +2,15 @@
 
 The Library for Build a Telegram Bot.
 
-## Get Started
+### Requirements
++ php-curl  <!-- sudo apt-get install php-curl -->
 
-<!-- sudo apt-get install php-curl -->
+## Get Started
 
 ```php
 // Checking the exists "Telebot Library".
 if (!file_exists("lib/telebot.php")) {
-  copy("https://raw.githubusercontent.com/hctilg/telebot/v1.3/index.php", "lib/telebot.php");
+  copy("https://raw.githubusercontent.com/hctilg/telebot/v1.4/index.php", "lib/telebot.php");
 }
 
 require('lib/telebot.php');
