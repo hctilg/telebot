@@ -12,40 +12,103 @@ class Telebot {
    */
   public $token;
 
-  public function __construct(string $token, string $api="https://api.telegram.org/bot") {
+  /**
+   * to be switched ON / OFF on CLI mode
+   */
+  public $debug;
+
+  public function __construct(
+    string $token,
+    bool $debug=true,
+    string $api="https://api.telegram.org/bot"
+  ) {
     // Check php version
-    if (version_compare(phpversion(), '5.4', '<')) {
-      die("It requires PHP 5.4 or higher. Your PHP version is " . phpversion() . PHP_EOL);
-    }
+    if (version_compare(phpversion(), '5.4', '<'))
+      die("It requires PHP 5.4 or higher. Your PHP version is " . phpversion() . "\n");
 
     // Check bot token
-    if (empty($token)) {
+    if (empty($token))
       die("Bot token should not be empty!\n");
-    }
     
     $this->api = $api;
     $this->token = $token;
+    $this->debug = !!$debug;
+  }
+
+  private static function curlFile($path) {
+    // PHP 5.5 introduced a CurlFile object that deprecates the old @filename syntax
+    // See: https://wiki.php.net/rfc/curl-file-upload
+    if (function_exists('curl_file_create')) {
+      return curl_file_create($path);
+    } else {
+      // Use the old style if using an older version of PHP
+      return "@$path";
+    }
   }
 
   private function send(string $method, array $args=[]) {
-    $url = $this->api . $this->token . '/';
+    $url = $this->api . $this->token;
     $params = !empty($args[0]) ? $args[0] : Null;
     if (!$params) $params = array();
-    $params['method'] = $method;
-    
-    $request = curl_init($url);
-    curl_setopt($request, CURLOPT_URL, $url);
-    curl_setopt($request, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($request, CURLOPT_SSL_VERIFYHOST, false);
-    curl_setopt($request, CURLOPT_SSL_VERIFYPEER, false);
-    // curl_setopt($request, CURLOPT_CONNETTIMEOUT, 7);
-    curl_setopt($request, CURLOPT_TIMEOUT, 60);
-    curl_setopt($request, CURLOPT_POSTFIELDS, json_encode($params));
-    curl_setopt($request, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
-    $result = curl_exec($request);
-    curl_close($request);
 
-    return($result ? json_decode($result, true) : false);
+    $upload = false;
+    $actionUpload = ['sendPhoto', 'sendAudio', 'sendDocument', 'sendSticker', 'sendVideo', 'sendVoice'];
+
+    if (in_array($method, $actionUpload)) {
+      $field = str_replace('send', '', strtolower($method));
+      
+      if (is_file($params[$field])) {
+        $upload = true;
+        $params[$field] = self::curlFile($params[$field]);
+      }
+    }
+
+    if (function_exists('curl_version')) {
+      $ch = curl_init();
+      $options = [
+        CURLOPT_URL => "$url/$method",
+        CURLOPT_POST => true,
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_SSL_VERIFYHOST => false,
+        CURLOPT_SSL_VERIFYPEER => false
+      ];
+
+      if (is_array($params)) $options[CURLOPT_POSTFIELDS] = $params;
+      if ($upload) $options[CURLOPT_HTTPHEADER] = ['Content-Type: multipart/form-data'];
+      curl_setopt_array($ch, $options);
+      $result = curl_exec($ch);
+
+      if (curl_errno($ch)) echo curl_error($ch) . PHP_EOL;
+      $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+      curl_close($ch);
+    } else {
+      if ($upload)
+        throw new Exception("Sorry, this service is not available because the current PHP version does not support the curl function. Please install first");
+
+      $opts = [
+        'http' => [
+          'method' => "POST",
+          'header' => 'Content-Type: application/x-www-form-urlencoded',
+          'content' => http_build_query($params)
+        ]
+      ];
+
+      $result = file_get_contents("$url/$method", false, stream_context_create($opts));
+      if (!$result) return false;
+
+      // need another review
+      $httpcode = null;
+    }
+
+    if ($this->debug && $method != 'getUpdates') {
+      echo "Method: $method" . PHP_EOL;
+      echo "Data: " . print_r($params, true) . PHP_EOL;
+      echo "Response: $result" .PHP_EOL;
+    }
+
+    if ($httpcode == 401) 
+      throw new Exception('Incorect bot token');     
+    else return json_decode($result, true);
   }
 
   /**

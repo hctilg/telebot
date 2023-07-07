@@ -61,22 +61,20 @@ $bot->sendMessage([
 ## SendDocument
 ```php
 $chat_id = $update['message']['chat']['id'];
-$link = "your file link";
 $bot->sendDocument([
   'chat_id'=> $chat_id,
-  'document'=> $link,
-  'caption'=> "this is a caption."
+  'document'=> 'file.zip',
+  'caption'=> 'this is a caption.'
 ]);
 ```
 
 ## SendPhoto
 ```php
 $chat_id = $update['message']['chat']['id'];
-$link = "your photo link";
 $bot->sendPhoto([
   'chat_id'=> $chat_id,
-  'photo'=> $link,
-  'caption'=> "this is a caption."
+  'photo'=> 'image.jpg',
+  'caption'=> 'this is a caption.'
 ]);
 ```
 
