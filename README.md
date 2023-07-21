@@ -119,17 +119,11 @@ $chat_id = $update['message']['chat']['id'];
 $text = $update['message']['text'];
 $callback_query = $update['callback_query'];
 
-$inline_btn = [
-  'inline_keyboard'=> [
-    [
-      ['text'=> 'Dialog', 'callback_data'=> 'show_dialog'],
-      ['text'=> 'Toast', 'callback_data'=> 'show_toast']
-    ],
-    [
-      ['text'=> 'GitHub', 'url'=> 'https://github.com/hctilg/telebot']
-    ]
-  ]
-];
+$inline_btn = Telebot::inline_keyboard("
+[Dialog|show_dialog] [Toast|show_toast]
+[SIQ|switch_inline_query:query] [SIQC|switch_inline_query_current_chat:query]
+[GitHub|url:https://github.com/hctilg/telebot]
+");
 
 $bot->sendMessage([
   'chat_id'=> $chat_id,

@@ -1,5 +1,13 @@
 <?php
 
+/**
+ * function to check string starting (with given substring)
+ */
+function startsWith(string $startString, string $string) {
+  $len = strlen($startString);
+  return (substr($string, 0, $len) === $startString);
+}
+
 class Telebot {
 
   /**
@@ -168,6 +176,44 @@ class Telebot {
         'one_time_keyboard' => $one_time_keyboard,
         'input_field_placeholder' => $input_field_placeholder
       ]);
+    }
+  }
+
+  /**
+   * to build inline_keyboard from string
+   * for example: 
+   * $btn = Telebot::inline_keyboard('[text] [text|callback_data] [text|url:link] [text|switch_inline_query:query] [text|switch_inline_query_current_chat:query]');
+   * $bot->sendMessage(['chat_id'=> $chat_id, 'text'=> $text, 'reply_markup' => $btn]);
+   */
+  public static function inline_keyboard(string $pattern) {
+    if (preg_match_all('/\[[^\|\]]+\|?[^\|\]]+\]([^\n]+)?([\n]+|$)/', $pattern, $match)) {
+      $arr = $match[0]; #array
+      $inline_keyboard = [];
+      foreach ($arr as $list) {
+        preg_match_all('/\[[^\|\]]+\|?[^\|\]]+\]/', $list, $new);
+        $array = $new[0];
+        $arrange = [];
+        foreach ($array as $a) {
+          $b = explode('|', $a);
+          $x = [];
+          foreach ($b as $c) $x[] = $c;
+          $b0 = trim(str_replace(['[',']'], '', $x[0]));
+          $b1 = isset($x[1]) ? trim(str_replace(']', '', $x[1])) : '';
+
+          if (startsWith('url:', $b1)) {
+            $arrange[] = ["text"=> $b0, "url"=> substr($b1, strlen('url:'), strlen($b1))];
+          } else if (startsWith('switch_inline_query:', $b1)) {
+            $arrange[] = ["text"=> $b0, "switch_inline_query"=> substr($b1, strlen('switch_inline_query:'), strlen($b1))];
+          } else if (startsWith('switch_inline_query_current_chat:', $b1)) {
+            $arrange[] = ["text"=> $b0, "switch_inline_query_current_chat"=> substr($b1, strlen('switch_inline_query_current_chat:'), strlen($b1))];
+          } else {
+            if ($b1 == '*' || empty($b1)) $b1 = $b0;
+            $arrange[] = ["text"=> $b0, "callback_data"=> $b1];
+          }
+        }
+        $inline_keyboard[] = $arrange;
+      }
+      return json_encode(["inline_keyboard" => $inline_keyboard]);
     }
   }
 }
