@@ -9,44 +9,66 @@ The Library for Build a Telegram Bot.
 
 ```php
 // Checking the exists "Telebot Library".
-if (!file_exists("lib/telebot.php")) {
-  copy("https://raw.githubusercontent.com/hctilg/telebot/v1.5/index.php", "lib/telebot.php");
+if (!file_exists("telebot.php")) {
+  copy("https://raw.githubusercontent.com/hctilg/telebot/v1.5/index.php", "telebot.php");
 }
 
-require('lib/telebot.php');
+require('telebot.php');
 
 $bot = new Telebot('TOKEN');
+
+// codes
+
+$bot->run();
 ```
 
 ## Use
 
 ```php
-$bot($method, $args);
-
-// for example: 
+/**
+ * for example: 
+ *  $bot($method, $args);
+ */
 $bot('sendMessage', ['chat_id'=> $chat_id, 'text'=> $text]);
 ```
 
  Or
 
 ```php
-$bot->$method($args);
-
-// for example: 
+/**
+ * for example: 
+ *  $bot->$method($args);
+ */
 $bot->sendMessage(['chat_id'=> $chat_id, 'text'=> $text]);
+```
+
+## Event Handler
+```php
+/**
+ * all events
+ * for example: 
+ *  $bot->on('all' or '*', function($type, $data) use ($bot, $args..) { ... });
+ */
+$bot->on('*', function($type, $data) use ($bot) {
+  $chat_id = $data['chat']['id'];
+  $bot->sendMessage(['chat_id'=> $chat_id, 'text'=> "$type\n\n" . json_encode($data)]);
+});
+
+/**
+ * one event
+ * for example: 
+ *  $bot->on($ev_type, function($data) use ($bot, $args..) { ... });
+ */
+$bot->on('text', function($data) use ($bot) {
+  $chat_id = $data['chat']['id'];
+  $text = $data['text'];
+  $bot->sendMessage(['chat_id'=> $chat_id, 'text'=> "Parrot: $text"]);
+});
 ```
 
 ## Example
 
-a few examples...
-
-first, get content from input(post requests) :
-```php
-$content = file_get_contents('php://input');
-$update = json_decode($content, true);
-```
-
-<br>
+a few examples..
 
 ## SendMessage
 ```php
@@ -81,57 +103,62 @@ $bot->sendPhoto([
 
 ## Keyboard Button
 ```php
-$chat_id = $update['message']['chat']['id'];
-$contact = $update['message']['contact'];
-$text = $update['message']['text'];
+$bot->on('text', function($data) use ($bot) {
+  $chat_id = $data['chat']['id'];
+  $text = $data['text'];
 
-$keyboard_btn = Telebot::keyboard("
-[Help]
-[Share Phone Number|request_contact] [Share Location|request_location]
-");
+  $keyboard_btn = Telebot::keyboard("
+    [Help]
+    [Share Phone Number|request_contact] [Share Location|request_location]
+  ");
 
-$bot->sendMessage([
-  'chat_id'=> $chat_id,
-  'text'=> "Keyboard Buttons :",
-  'reply_markup'=> $keyboard_btn
-]);
-
-if ($text == 'Help') {
   $bot->sendMessage([
-    'chat_id'=>$chat_id,
-    'text'=> "Help Text Here",
-    'disable_web_page_preview'=> true
+    'chat_id'=> $chat_id,
+    'text'=> "Keyboard Buttons :",
+    'reply_markup'=> $keyboard_btn
   ]);
-}
 
-if (!empty($contact)) {
+  if ($text == 'Help') {
+    $bot->sendMessage([
+      'chat_id'=>$chat_id,
+      'text'=> "Help Text Here",
+      'disable_web_page_preview'=> true
+    ]);
+  }
+});
+
+$bot->on('contact', function($data) use ($bot) {
+  $chat_id = $data['chat']['id'];
+  $contact = $data['contact'];
   $phone_number = $contact['phone_number'];
+
   $bot->sendMessage([
     'chat_id'=>$chat_id,
     'text'=> "Phone Number: $phone_number"
   ]);
-}
+});
 ```
 
 ## Inline Keyboard Button
 ```php
-$chat_id = $update['message']['chat']['id'];
-$text = $update['message']['text'];
-$callback_query = $update['callback_query'];
+$bot->on('text', function($data) use ($bot) {
+  $chat_id = $data['chat']['id'];
+  $text = $data['text'];
 
-$inline_btn = Telebot::inline_keyboard("
-[Dialog|show_dialog] [Toast|show_toast]
-[SIQ|switch_inline_query:query] [SIQC|switch_inline_query_current_chat:query]
-[GitHub|url:https://github.com/hctilg/telebot]
-");
+  $inline_btn = Telebot::inline_keyboard("
+    [Dialog|show_dialog] [Toast|show_toast]
+    [SIQ|switch_inline_query:query] [SIQC|switch_inline_query_current_chat:query]
+    [GitHub|url:https://github.com/hctilg/telebot]
+  ");
 
-$bot->sendMessage([
-  'chat_id'=> $chat_id,
-  'text'=> "Inline Keyboard Buttons :",
-  'reply_markup'=> $inline_btn
-]);
+  $bot->sendMessage([
+    'chat_id'=> $chat_id,
+    'text'=> "Inline Keyboard Buttons :",
+    'reply_markup'=> $inline_btn
+  ]);
+});
 
-if (!empty($callback_query)) {
+$bot->on('callback_query', function($callback_query) use ($bot) {
   $callback_query_id = $callback_query['id'];
   $callback_query_data = $callback_query['data'];
   $callback_query_chat_id = $callback_query['message']['chat']['id'];
@@ -142,16 +169,14 @@ if (!empty($callback_query)) {
       'text'=> 'Dialog Text Here.',
       'show_alert'=> true
     ]);
-
   } elseif ($callback_query_data == 'show_toast') {
     $bot->answerCallbackQuery([
       'callback_query_id'=> $callback_query_id,
       'text'=> 'Toast Text Here.',
       'show_alert'=> false
     ]);
-    
   }
-}
+});
 ```
 
 #### [Telegram Bot API](https://core.telegram.org/bots/api)
