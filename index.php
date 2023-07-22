@@ -8,6 +8,35 @@ function startsWith(string $startString, string $string) {
   return (substr($string, 0, $len) === $startString);
 }
 
+/**
+ * function to download file
+ * @return bool
+ */
+function download_file($url, $path, $chunk_size) {
+  // disabled time limit
+  set_time_limit(0);
+  try {
+    // open file for read
+    $file_handle = fopen($url, 'rb');
+    if (!!$file_handle) {
+      // open file for write
+      $output_handle = fopen($path, 'wb');
+      while (!feof($file_handle)) {
+        // read a chunk from file
+        $chunk = fread($file_handle, $chunk_size);
+        // write a readed chunk in outlet file
+        fwrite($output_handle, $chunk);
+      }
+
+      // close files
+      fclose($output_handle);
+      fclose($file_handle);
+      return true;
+    }
+  } catch (Exception $e) { }
+  return false;
+}
+
 class Telebot {
 
   /**
@@ -28,7 +57,7 @@ class Telebot {
   /**
    * version of this code
    */
-  protected static $version = '1.6';
+  protected static $version = '1.7';
 
   /**
    * array of events (types) and the responds
@@ -110,6 +139,26 @@ class Telebot {
       // Use the old style if using an older version of PHP
       return "@$path";
     }
+  }
+
+  /**
+   * Download file with file_id
+   * @param string $file_id
+   * @param string $path       default: auto
+   * @param        $chunk_size default: (1MB)
+   * @return bool
+   */
+  public function download(string $file_id, string $path='auto', $chunk_size=(1024**2)) {
+    if (empty($file_id) || empty($path) || $chunk_size < 1) return false;
+    $file_data = $this->getFile(['file_id' => "$file_id"]);
+    if (!$file_data['ok']) return false;
+    $file_path = $file_data['result']['file_path'];
+    if ($path == 'auto') {
+      $lp = explode('/', $file_path);
+      $path = $lp[count($lp)-1];
+    }
+    $file_url = "https://api.telegram.org/file/bot" . $this->token . "/$file_path";
+    return !!download_file($file_url, $path, $chunk_size);
   }
 
   private function send(string $method, array $args=[]) {

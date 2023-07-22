@@ -72,8 +72,8 @@ a few examples..
 
 ## SendMessage
 ```php
-$chat_id = $update['message']['chat']['id'];
-$name = $update['message']['chat']['first_name'];
+$chat_id = $data['chat']['id'];
+$name = $data['chat']['first_name'];
 $bot->sendMessage([
   'chat_id'=> $chat_id,
   'text'=> "Hello $name",
@@ -81,9 +81,14 @@ $bot->sendMessage([
 ]);
 ```
 
+## DownloadFile
+```php
+$bot->download($file_id, $file_path);
+```
+
 ## SendDocument
 ```php
-$chat_id = $update['message']['chat']['id'];
+$chat_id = $data['chat']['id'];
 $bot->sendDocument([
   'chat_id'=> $chat_id,
   'document'=> 'file.zip',
@@ -93,7 +98,7 @@ $bot->sendDocument([
 
 ## SendPhoto
 ```php
-$chat_id = $update['message']['chat']['id'];
+$chat_id = $data['chat']['id'];
 $bot->sendPhoto([
   'chat_id'=> $chat_id,
   'photo'=> 'image.jpg',
