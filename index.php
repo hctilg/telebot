@@ -57,7 +57,7 @@ class Telebot {
   /**
    * version of this code
    */
-  protected static $version = '1.9';
+  protected static $version = '2.0';
 
   /**
    * array of events (types) and the responds
@@ -244,6 +244,26 @@ class Telebot {
    */
   public function __call(string $method, array $args=[]) {
     return $this->send($method, $args);
+  }
+
+  /**
+   * delete pending updates
+   */
+  private function clear_pending_updates() {
+    // create curl handle
+    $ch = curl_init();
+
+    // set url to request
+    curl_setopt($ch, CURLOPT_URL, "{$this->api}{$this->token}/setWebhook?url=etc&drop_pending_updates=true");
+
+    // set option to return the response as a string instead of outputting it
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+    // execute curl request
+    curl_exec($ch);
+
+    // close curl handle
+    curl_close($ch);
   }
 
   /**
@@ -518,6 +538,8 @@ class Telebot {
    * @throws Exception
    */
   private function longPoll() {
+    $this->clear_pending_updates();
+
     $offset = 0;
     $rsv = [];
     while (true) {
