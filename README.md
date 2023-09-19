@@ -10,7 +10,7 @@ The Library for Build a Telegram Bot.
 ```php
 // Checking the exists "Telebot Library".
 if (!file_exists("telebot.php")) {
-  copy("https://raw.githubusercontent.com/hctilg/telebot/v1.7/index.php", "telebot.php");
+  copy("https://raw.githubusercontent.com/hctilg/telebot/v1.8/index.php", "telebot.php");
 }
 
 require('telebot.php');
