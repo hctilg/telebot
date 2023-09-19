@@ -57,7 +57,7 @@ class Telebot {
   /**
    * version of this code
    */
-  protected static $version = '1.8';
+  protected static $version = '1.9';
 
   /**
    * array of events (types) and the responds
@@ -85,6 +85,7 @@ class Telebot {
     'venue',
     'location',
     'chat_join_request',
+    'my_chat_member',
     'new_chat_members',
     'left_chat_members',
     'new_chat_title',
@@ -340,6 +341,8 @@ class Telebot {
       return $update['edited_channel_post'];
     } elseif (isset($update['chat_join_request'])) {
       return $update['chat_join_request'];
+    } elseif (isset($update['my_chat_member'])) {
+      return $update['my_chat_member'];
     } else {
       return [];
     }
@@ -380,6 +383,8 @@ class Telebot {
       return 'callback_query';
     } elseif (isset($update['chat_join_request'])) {
       return 'chat_join_request';
+    } elseif (isset($update['my_chat_member'])) {
+      return 'my_chat_member';
     } elseif (isset($update['message']['new_chat_members'])) {
       return 'new_chat_members';
     } elseif (isset($update['message']['left_chat_members'])) {
@@ -486,6 +491,10 @@ class Telebot {
     if (in_array($type, $events_type)) {
       $call = $this->events[$type];
       call_user_func_array($call, ["data"=> $data]);
+    }
+
+    if ($type == 'unknown') {
+      call_user_func_array($call, ["type"=> 'update', "data"=> $update]);
     }
 
     return true;
