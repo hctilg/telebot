@@ -57,7 +57,7 @@ class Telebot {
   /**
    * version of this code
    */
-  protected static $version = '1.7';
+  protected static $version = '1.8';
 
   /**
    * array of events (types) and the responds
@@ -84,6 +84,7 @@ class Telebot {
     'poll',
     'venue',
     'location',
+    'chat_join_request',
     'new_chat_members',
     'left_chat_members',
     'new_chat_title',
@@ -337,6 +338,8 @@ class Telebot {
       return $update['channel_post'];
     } elseif (isset($update['edited_channel_post'])) {
       return $update['edited_channel_post'];
+    } elseif (isset($update['chat_join_request'])) {
+      return $update['chat_join_request'];
     } else {
       return [];
     }
@@ -375,6 +378,8 @@ class Telebot {
       return 'inline_query';
     } elseif (isset($update['callback_query'])) {
       return 'callback_query';
+    } elseif (isset($update['chat_join_request'])) {
+      return 'chat_join_request';
     } elseif (isset($update['message']['new_chat_members'])) {
       return 'new_chat_members';
     } elseif (isset($update['message']['left_chat_members'])) {
