@@ -505,16 +505,16 @@ class Telebot {
 
     if (in_array('all', $events_type)) {
       $call = $this->events['all'];
-      call_user_func_array($call, ["type"=> $type, "data"=> $data]);
+      call_user_func_array($call, [$type, $data]);
     }
 
     if (in_array($type, $events_type)) {
       $call = $this->events[$type];
-      call_user_func_array($call, ["data"=> $data]);
+      call_user_func_array($call, [$data]);
     }
 
     if ($type == 'unknown') {
-      call_user_func_array($call, ["type"=> 'update', "data"=> $update]);
+      call_user_func_array($call, ['update', $update]);
     }
 
     return true;
