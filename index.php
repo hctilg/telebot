@@ -455,7 +455,7 @@ class Telebot {
   public function on($type, $answer) {
     $type = trim($type);
     $type = $type == '*' ? 'all' : strtolower($type);
-    if (is_callable($answer) && ($type == 'all' || in_array($type, self::$types))) {
+    if (isset($answer) && is_callable($answer) && ($type == 'all' || in_array($type, self::$types))) {
       $this->events[$type] = $answer;
       return true;
     }
