@@ -513,7 +513,7 @@ class Telebot {
       call_user_func_array($call, [$data]);
     }
 
-    if ($type == 'unknown') {
+    if ($type == 'unknown' && isset($answer) && is_callable($answer)) {
       call_user_func_array($call, ['update', $update]);
     }
 
