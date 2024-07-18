@@ -524,7 +524,21 @@ class Telebot {
    * Webhook Mode.
    */
   private function webhook() {
-    if ($_SERVER['REQUEST_METHOD'] == 'POST' && $_SERVER['CONTENT_TYPE'] == 'application/json') {
+    $telegram_ip_ranges = [
+      ['lower' => '149.154.160.0', 'upper' => '149.154.175.255'],
+      ['lower' => '91.108.4.0',    'upper' => '91.108.7.255'],
+    ];
+    
+    $ip_dec = (float) sprintf("%u", ip2long($_SERVER['REMOTE_ADDR']));
+    
+    $is_telegram = false;
+    foreach ($telegram_ip_ranges as $telegram_ip_range) if (!$is_telegram) {
+      $lower_dec = (float) sprintf("%u", ip2long($telegram_ip_range['lower']));
+      $upper_dec = (float) sprintf("%u", ip2long($telegram_ip_range['upper']));
+      if ($ip_dec >= $lower_dec and $ip_dec <= $upper_dec) $is_telegram = true;
+    }
+    
+    if ($is_telegram && $_SERVER['REQUEST_METHOD'] == 'POST' && $_SERVER['CONTENT_TYPE'] == 'application/json') {
       $update = json_decode(file_get_contents('php://input'), true);
       $this->process($update, false);
     } else {
