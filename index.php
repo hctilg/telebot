@@ -57,7 +57,7 @@ class Telebot {
   /**
    * version of this code
    */
-  protected static $version = '2.0';
+  protected static $version = '2.1';
 
   /**
    * array of events (types) and the responds
