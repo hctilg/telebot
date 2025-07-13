@@ -57,7 +57,7 @@ class Telebot {
   /**
    * version of this code
    */
-  protected static $version = '2.1';
+  protected static $version = '2.2';
 
   /**
    * array of events (types) and the responds
@@ -335,6 +335,8 @@ class Telebot {
             $arrange[] = ["text"=> $b0, "switch_inline_query"=> substr($b1, strlen('switch_inline_query:'), strlen($b1))];
           } else if (startsWith('switch_inline_query_current_chat:', $b1)) {
             $arrange[] = ["text"=> $b0, "switch_inline_query_current_chat"=> substr($b1, strlen('switch_inline_query_current_chat:'), strlen($b1))];
+          } else if (startsWith('copy_text:', $b1)) {
+            $arrange[] = ["copy_text"=> ["text"=> $b0], "text"=> substr($b1, strlen('copy_text:'), strlen($b1))];
           } else {
             if ($b1 == '*' || empty($b1)) $b1 = $b0;
             $arrange[] = ["text"=> $b0, "callback_data"=> $b1];
