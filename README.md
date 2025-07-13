@@ -10,7 +10,7 @@ The Library for Build a Telegram Bot.
 ```php
 // Checking the exists "Telebot Library".
 if (!file_exists("telebot.php")) {
-  copy("https://raw.githubusercontent.com/hctilg/telebot/v2.1/index.php", "telebot.php");
+  copy("https://raw.githubusercontent.com/hctilg/telebot/v2.2/index.php", "telebot.php");
 }
 
 require('telebot.php');
@@ -154,6 +154,7 @@ $bot->on('text', function($data) use ($bot) {
     [Dialog|show_dialog] [Toast|show_toast]
     [SIQ|switch_inline_query:query] [SIQC|switch_inline_query_current_chat:query]
     [GitHub|url:https://github.com/hctilg/telebot]
+    [Telebot is a php-library for building Telegram bots.|copy_text:Copy in Clipboard]
   ");
 
   $bot->sendMessage([
