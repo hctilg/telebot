@@ -365,6 +365,8 @@ class Telebot {
       return $update['chat_join_request'];
     } elseif (isset($update['my_chat_member'])) {
       return $update['my_chat_member'];
+    }  elseif (isset($update['chat_member'])) {
+      return $update['chat_member'];
     } else {
       return [];
     }
