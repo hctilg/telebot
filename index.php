@@ -84,6 +84,7 @@ class Telebot {
     'poll',
     'venue',
     'location',
+    'message_reaction',
     'message_reaction_count',
     'chat_join_request',
     'chat_member',
@@ -361,6 +362,8 @@ class Telebot {
       return $update['channel_post'];
     } elseif (isset($update['edited_channel_post'])) {
       return $update['edited_channel_post'];
+    } elseif (isset($update['message_reaction']) {
+      return $update['message_reaction'];
     } elseif (isset($update['chat_join_request'])) {
       return $update['chat_join_request'];
     } elseif (isset($update['my_chat_member'])) {
@@ -368,7 +371,7 @@ class Telebot {
     }  elseif (isset($update['chat_member'])) {
       return $update['chat_member'];
     } else {
-      return [];
+      return $update[array_keys($$update)[1]];
     }
   }
 
@@ -401,6 +404,8 @@ class Telebot {
       return 'venue';
     } elseif (isset($update['message']['location'])) {
       return 'location';
+    }  elseif (isset($update['message']['message_reaction'])) {
+      return 'message_reaction';
     } elseif (isset($update['inline_query'])) {
       return 'inline_query';
     } elseif (isset($update['callback_query'])) {
