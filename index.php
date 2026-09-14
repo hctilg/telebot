@@ -371,7 +371,7 @@ class Telebot {
     }  elseif (isset($update['chat_member'])) {
       return $update['chat_member'];
     } else {
-      return $update[array_keys($$update)[1]];
+      return $update[array_keys($update)[1]];
     }
   }
 
