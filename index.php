@@ -362,7 +362,7 @@ class Telebot {
       return $update['channel_post'];
     } elseif (isset($update['edited_channel_post'])) {
       return $update['edited_channel_post'];
-    } elseif (isset($update['message_reaction']) {
+    } elseif (isset($update['message_reaction'])) {
       return $update['message_reaction'];
     } elseif (isset($update['chat_join_request'])) {
       return $update['chat_join_request'];
