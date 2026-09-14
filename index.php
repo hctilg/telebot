@@ -87,8 +87,6 @@ class Telebot {
     'message_reaction_count',
     'chat_join_request',
     'chat_member',
-    'my_chat_member',
-    'new_chat_members',
     'left_chat_members',
     'new_chat_title',
     'new_chat_photo',
@@ -409,10 +407,8 @@ class Telebot {
       return 'chat_join_request';
     } elseif (isset($update['my_chat_member'])) {
       return 'my_chat_member';
-    } elseif (isset($update['message']['new_chat_members'])) {
-      return 'new_chat_members';
-    } elseif (isset($update['message']['left_chat_members'])) {
-      return 'left_chat_members';
+    } elseif (isset($update['chat_member'])) {
+      return 'chat_member';
     } elseif (isset($update['message']['new_chat_title'])) {
       return 'new_chat_title';
     } elseif (isset($update['message']['new_chat_photo'])) {
